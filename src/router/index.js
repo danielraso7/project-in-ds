@@ -1,21 +1,56 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+import DashboardView from '@/views/DashboardView.vue'
+import TripsView from '@/views/TripsView.vue'
+import GoalsView from '@/views/GoalsView.vue'
+import AddTripView from '@/views/AddTripView.vue'
+import AddGoalView from '@/views/AddGoalView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import MapView from '@/views/MapView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'dashboard',
+      component: DashboardView,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/trips',
+      name: 'trips',
+      component: TripsView,
+    },
+    {
+      path: '/goals',
+      name: 'goals',
+      component: GoalsView,
+    },
+    {
+      path: '/trips/add',
+      name: 'add-trip',
+      component: AddTripView,
+    },
+    {
+      path: '/goals/add',
+      name: 'add-goal',
+      component: AddGoalView,
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'not-found',
+      component: NotFoundView,
     },
   ],
 })
