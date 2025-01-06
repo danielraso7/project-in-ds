@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineModel, onMounted } from 'vue'
+import { onMounted } from 'vue'
 
 const props = defineProps({
   categories: Array,
@@ -19,7 +19,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <label class="form-label">Category</label>
+    <label class="form-label"><strong>Category</strong></label>
     <div class="row">
       <div v-for="category in categories" :key="category.id" class="col d-flex justify-content-center">
         <input :id="category.id" class="btn-check" type="radio" name="category" :value="category.value" v-model="selectedCategory" />

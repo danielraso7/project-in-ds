@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import FriendsSelect from '@/components/FriendsSelect.vue'
+import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
+import SubmitButton from '@/components/SubmitButton.vue'
 
 const goalTypes = ref([
   { id: 'type1', label: 'Coverage goal' },
@@ -49,7 +50,7 @@ const isType4 = computed(() => formData.goalType === 'type4')
   <h3 class="text-dark mb-4">Add Goal</h3>
   <form @submit.prevent="handleSubmit" novalidate>
     <div class="row mb-5 justify-content-center">
-      <label class="col-md-2 col-sm-3 col-form-label text-md-end" for="goalTypeSelect">Goal Type:</label>
+      <label class="col-md-2 col-sm-3 col-form-label text-md-end" for="goalTypeSelect"><strong>Goal Type:</strong></label>
       <div class="col-md-3">
         <select v-model="formData.goalType" class="form-select" id="goalTypeSelect" required>
           <option value="" disabled>Select a goal type</option>
@@ -67,7 +68,7 @@ const isType4 = computed(() => formData.goalType === 'type4')
           <div v-if="isType1">
             <div class="row justify-content-center">
               <div class="col-md-4 mb-3">
-                <label class="form-label">How much (value mustn't exceed the total amount)?</label>
+                <label class="form-label"><strong>How much (value mustn't exceed the total amount)?</strong></label>
                 <div class="input-group">
                   <input v-model="formData.coverNumber" class="form-control" type="number" step="0.01" />
                   <div class="input-group-text">
@@ -79,7 +80,7 @@ const isType4 = computed(() => formData.goalType === 'type4')
                 </div>
               </div>
               <div class="col-md-4 mb-3">
-                <label class="form-label">What?</label
+                <label class="form-label"><strong>What?</strong></label
                 ><select id="coverObject" class="form-select">
                   <option value="" selected disabled>pls select what you want to cover</option>
                   <option value="coverWhatId2">Stations</option>
@@ -91,13 +92,11 @@ const isType4 = computed(() => formData.goalType === 'type4')
           <div v-if="isType2">
             <div class="row justify-content-center">
               <div class="col-md-4 mb-3">
-                <label class="form-label">How many?</label>
-                <div class="input-group">
-                  <input v-model="formData.quantitativeNumber" class="form-control" type="number" />
-                </div>
+                <label class="form-label"><strong>How many?</strong></label>
+                <input v-model="formData.quantitativeNumber" class="form-control" type="number" />
               </div>
               <div class="col-md-4 mb-3">
-                <label class="form-label">What?</label
+                <label class="form-label"><strong>What?</strong></label
                 ><select id="coverObject" class="form-select">
                   <option value="" selected disabled>pls select what you want to count</option>
                   <option value="coverWhatId2">Stations</option>
@@ -110,7 +109,7 @@ const isType4 = computed(() => formData.goalType === 'type4')
 
           <div class="row">
             <div v-if="isType1 || isType2" class="col-md-4 mb-3">
-              <label class="form-label">Federal State</label
+              <label class="form-label"><strong>Federal State</strong></label
               ><select id="predefinedGoal" class="form-select">
                 <option value="" selected>-</option>
                 <option value="goal1id">Upper Austria</option>
@@ -119,13 +118,15 @@ const isType4 = computed(() => formData.goalType === 'type4')
               </select>
             </div>
             <div v-if="isType3" class="col-md-4 mb-3">
-              <label class="form-label">Price</label>
+              <label class="form-label"><strong>Price</strong></label>
               <div class="input-group">
-                <input class="form-control" type="number" step="0.01" /><span class="input-group-text"><i class="fa-solid fa-euro-sign"></i></span>
+                <input class="form-control" type="number" step="0.01" placeholder="Enter price" /><span class="input-group-text"
+                  ><i class="fa-solid fa-euro-sign"></i
+                ></span>
               </div>
             </div>
             <div v-if="isType4" class="col-md-4 mb-3">
-              <label class="form-label">Goal</label
+              <label class="form-label"><strong>Goal</strong></label
               ><select id="predefinedGoal" class="form-select">
                 <option value="" selected disabled>pls select a predefined goal</option>
                 <option value="goal1id">visit all federal states</option>
@@ -136,11 +137,11 @@ const isType4 = computed(() => formData.goalType === 'type4')
               </select>
             </div>
             <div class="col-md-4 mb-3">
-              <label class="form-label">Start Date</label>
+              <label class="form-label"><strong>Start Date</strong></label>
               <input v-model="formData.startDate" class="form-control" type="date" />
             </div>
             <div class="col-md-4 mb-3">
-              <label class="form-label">End Date</label>
+              <label class="form-label"><strong>End Date</strong></label>
               <input v-model="formData.endDate" class="form-control" type="date" />
             </div>
           </div>
@@ -149,13 +150,10 @@ const isType4 = computed(() => formData.goalType === 'type4')
               <CategoriesRadio :categories="categories" v-model:selected-category="formData.selectedCategory" />
             </div>
             <div class="col mb-3">
-              <FriendsSelect :friends="friends" v-model:selected-friends="formData.selectedFriends" />
+              <FriendsCheckboxes :friends="friends" v-model:selected-friends="formData.selectedFriends" />
             </div>
           </div>
-
-          <div class="row">
-            <div class="col"><button class="btn btn-primary" type="submit">Add</button></div>
-          </div>
+          <SubmitButton button-text="Add Goal" />
         </div>
       </div>
     </div>

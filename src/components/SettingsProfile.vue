@@ -1,0 +1,98 @@
+<script setup>
+import { ref } from 'vue'
+import SubmitButton from '@/components/SubmitButton.vue'
+
+// Simulate fetching data from a database
+const klimaticketType = ref(false) // false for classic, true for special
+
+const handleSubmit = () => {
+  // Handle form submission logic
+  console.log('Klimaticket Type updated:', klimaticketType.value)
+  // Update the Klimaticket type in the database
+}
+</script>
+
+<template>
+  <div class="row mb-3">
+    <div class="col-lg-4">
+      <div class="card shadow mb-3">
+        <div class="card-body text-center shadow">
+          <img class="rounded-circle mb-3 mt-4" src="@/assets/logo.svg" width="160" height="160" />
+          <SubmitButton :button-text="'Change Photo'" />
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card shadow mb-3">
+            <div class="card-header py-3">
+              <h6 class="text-primary m-0 fw-bold">User Settings</h6>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label" for="username"><strong>Username</strong></label
+                      ><input id="username" class="form-control" type="text" placeholder="user.name" name="username" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label" for="email"><strong>Email Address</strong></label
+                      ><input id="email" class="form-control" type="email" placeholder="user@example.com" name="email" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label" for="pwd"><strong>Password</strong></label
+                      ><input id="pwd" class="form-control" type="password" placeholder="mysavepassword" name="pwd" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label" for="first_name"><strong>First Name</strong></label
+                      ><input id="first_name" class="form-control" type="text" placeholder="John" name="first_name" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="mb-3">
+                      <label class="form-label" for="last_name"><strong>Last Name</strong></label
+                      ><input id="last_name" class="form-control" type="text" placeholder="Doe" name="last_name" />
+                    </div>
+                  </div>
+                </div>
+                <SubmitButton :button-text="'Update Profile'" />
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow mb-3">
+            <div class="card-header py-3">
+              <h6 class="text-primary m-0 fw-bold">Klimaticket Type</h6>
+            </div>
+            <div class="card-body">
+              <form @submit.prevent="handleSubmit">
+                <div class="row mb-3">
+                  <div class="col">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="klimaticketSwitch" v-model="klimaticketType" />
+                      <label class="form-check-label" for="klimaticketSwitch">
+                        {{ klimaticketType ? '&nbsp;Jugend/Senior/Spezial (€ 821,-)' : '&nbsp;Classic (€ 1.095,-)' }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <SubmitButton :button-text="'Update Klimaticket Type'" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

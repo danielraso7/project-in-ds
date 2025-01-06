@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import FriendsSelect from '@/components/FriendsSelect.vue'
+import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
+import SubmitButton from '@/components/SubmitButton.vue'
 
 const friends = ref([
   { id: 'formCheck-1', label: 'Friend 1', value: 'friend1' },
@@ -53,25 +54,36 @@ const formData = reactive({
           </div>
         </div>
         <div class="row">
-          <div class="col mb-3"><label class="form-label">Stops in between</label><textarea class="form-control" readonly></textarea></div>
+          <div class="col mb-3">
+            <label class="form-label">Stops in between</label
+            ><textarea class="form-control" readonly placeholder="enter start and end station"></textarea>
+          </div>
         </div>
         <div class="row">
-          <div class="col mb-3"><label class="form-label">Description</label><input class="form-control" type="text" /></div>
+          <div class="col mb-3">
+            <label class="form-label">Description</label><input class="form-control" type="text" placeholder="Enter description" />
+          </div>
         </div>
         <div class="row">
           <div class="col-md-4 mb-3"><label class="form-label">Date</label><input class="form-control" type="date" required /></div>
           <div class="col mb-3">
             <label class="form-label">Duration</label>
-            <div class="input-group"><input class="form-control" type="number" /><span class="input-group-text">min</span></div>
+            <div class="input-group">
+              <input class="form-control" type="number" placeholder="Enter travel time" /><span class="input-group-text">min</span>
+            </div>
           </div>
           <div class="col mb-3">
             <label class="form-label">Distance</label>
-            <div class="input-group"><input class="form-control" type="number" readonly /><span class="input-group-text">km</span></div>
+            <div class="input-group">
+              <input class="form-control" type="number" readonly placeholder="enter start and end station" /><span class="input-group-text">km</span>
+            </div>
           </div>
           <div class="col mb-3">
             <label class="form-label">Price</label>
             <div class="input-group">
-              <input class="form-control" type="number" step="0.01" /><span class="input-group-text"><i class="fa-solid fa-euro-sign"></i></span>
+              <input class="form-control" type="number" step="0.01" placeholder="Enter price" /><span class="input-group-text"
+                ><i class="fa-solid fa-euro-sign"></i
+              ></span>
             </div>
           </div>
         </div>
@@ -80,7 +92,7 @@ const formData = reactive({
             <CategoriesRadio :categories="categories" v-model:selected-category="formData.selectedCategory" />
           </div>
           <div class="col mb-3">
-            <FriendsSelect :friends="friends" v-model:selected-friends="formData.selectedFriends" />
+            <FriendsCheckboxes :friends="friends" v-model:selected-friends="formData.selectedFriends" />
           </div>
         </div>
         <div class="row">
@@ -101,9 +113,7 @@ const formData = reactive({
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col"><button class="btn btn-primary" type="submit">Add</button></div>
-        </div>
+        <SubmitButton button-text="Add Trip" />
       </form>
     </div>
   </div>

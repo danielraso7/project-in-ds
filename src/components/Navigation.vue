@@ -12,19 +12,19 @@ import { RouterLink } from 'vue-router'
       <hr class="sidebar-divider my-0" />
       <ul class="navbar-nav text-light" id="accordionSidebar">
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/" active-class="active"><i class="fa-solid fa-home"></i><span>Dashboard</span></RouterLink>
+          <RouterLink class="nav-link" to="/" active-class="active"><i class="fa-solid fa-home"></i><span>&nbsp;Dashboard</span></RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/trips" active-class="active"><i class="fa-solid fa-train"></i><span>Trips</span></RouterLink>
+          <RouterLink class="nav-link" to="/trips" active-class="active"><i class="fa-solid fa-train"></i><span>&nbsp;Trips</span></RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/goals" active-class="active"><i class="fa-solid fa-bullseye"></i><span>Goals</span></RouterLink>
+          <RouterLink class="nav-link" to="/goals" active-class="active"><i class="fa-solid fa-bullseye"></i><span>&nbsp;Goals</span></RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/map" active-class="active"><i class="fa-solid fa-map"></i><span>Map</span></RouterLink>
+          <RouterLink class="nav-link" to="/map" active-class="active"><i class="fa-solid fa-map"></i><span>&nbsp;Map</span></RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/settings" active-class="active"><i class="fa-solid fa-gear"></i><span>Settings</span></RouterLink>
+          <RouterLink class="nav-link" to="/settings" active-class="active"><i class="fa-solid fa-gear"></i><span>&nbsp;Settings</span></RouterLink>
         </li>
       </ul>
       <div class="text-center d-none d-md-inline mb-5"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
