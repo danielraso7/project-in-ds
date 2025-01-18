@@ -5,7 +5,7 @@ const props = defineProps({
   filterOption: String,
   sortOption: {
     type: String,
-    default: 'goalType',
+    default: 'progress_asc',
   },
   limit: {
     type: Number,
