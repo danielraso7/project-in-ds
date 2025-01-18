@@ -74,7 +74,7 @@ const isType4 = computed(() => formData.goalType === 'type4')
                   <div class="input-group-text">
                     <input type="checkbox" v-model="formData.isPercentage" class="d-none" id="togglePercentage" />
                     <label for="togglePercentage" class="m-0">
-                      <i :class="formData.isPercentage ? 'fa-solid fa-hashtag' : 'fa-solid fa-euro-sign'"></i>
+                      <i :class="formData.isPercentage ? 'fa-solid fa-hashtag' : 'fa-solid fa-percent'"></i>
                     </label>
                   </div>
                 </div>

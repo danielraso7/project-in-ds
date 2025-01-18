@@ -58,7 +58,7 @@ onMounted(fetchFriends)
               <label class="form-label" for="username"><strong>Username</strong></label>
               <input id="username" class="form-control" type="text" v-model="newFriendUsername" placeholder="Enter username" required />
             </div>
-            <SubmitButton button-text="Add" :disabled="loading" />
+            <SubmitButton button-text="Add Friend" :disabled="loading" />
           </form>
         </div>
       </div>

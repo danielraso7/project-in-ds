@@ -1,5 +1,6 @@
 import './assets/main.css'
-import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap/dist/css/bootstrap.css'
+import './assets/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.js'
 import 'primeicons/primeicons.css'
 import Toast from 'vue-toastification'

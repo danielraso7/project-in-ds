@@ -93,8 +93,8 @@ onMounted(fetchUserData)
       <div class="col-6 col-md-3 mb-2 mb-md-0">
         <select id="filter" class="form-select form-select-sm" v-model="filterOption">
           <option selected value="none">Filters</option>
-          <option v-for="category in categories" :key="category.id" :value="category.name">(C) {{ category.name }}</option>
-          <option v-for="friend in friends" :key="friend.id" :value="friend.name">(F) {{ friend.name }}</option>
+          <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
+          <option v-for="friend in friends" :key="friend.id" :value="friend.name">{{ friend.name }}</option>
         </select>
       </div>
       <div class="col-6 col-md-3 mb-2 mb-md-0">
@@ -190,7 +190,7 @@ onMounted(fetchUserData)
     :searchQuery="searchQuery"
     :filterOption="filterOption"
     :sortOption="sortOption"
-    :limit="100"
+    :limit="10"
     @update:filteredTrips="filteredTrips = $event"
   />
 </template>

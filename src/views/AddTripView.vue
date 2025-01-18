@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive } from 'vue'
 import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
@@ -19,7 +19,6 @@ const categories = ref([
 ])
 
 const formData = reactive({
-  goalType: '',
   startDate: '',
   endDate: '',
   selectedFriends: [],
@@ -37,7 +36,7 @@ const formData = reactive({
       <form>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">From</label
+            <label class="form-label"><strong>From</strong></label
             ><select id="fromCity" class="form-select" required>
               <option value="" selected disabled>pls select a city</option>
               <option value="city1id">city1</option>
@@ -45,7 +44,7 @@ const formData = reactive({
             </select>
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label">To</label
+            <label class="form-label"><strong>To</strong></label
             ><select id="toCity" class="form-select" required>
               <option value="" selected disabled>pls select a city</option>
               <option value="city1id">city1</option>
@@ -55,31 +54,35 @@ const formData = reactive({
         </div>
         <div class="row">
           <div class="col mb-3">
-            <label class="form-label">Stops in between</label
+            <label class="form-label"><strong>Stops in between</strong></label
             ><textarea class="form-control" readonly placeholder="enter start and end station"></textarea>
           </div>
         </div>
         <div class="row">
           <div class="col mb-3">
-            <label class="form-label">Description</label><input class="form-control" type="text" placeholder="Enter description" />
+            <label class="form-label"><strong>Description</strong></label
+            ><input class="form-control" type="text" placeholder="Enter description" />
           </div>
         </div>
         <div class="row">
-          <div class="col-md-4 mb-3"><label class="form-label">Date</label><input class="form-control" type="date" required /></div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><strong>Date</strong></label
+            ><input class="form-control" type="date" required />
+          </div>
           <div class="col mb-3">
-            <label class="form-label">Duration</label>
+            <label class="form-label"><strong>Duration</strong></label>
             <div class="input-group">
               <input class="form-control" type="number" placeholder="Enter travel time" /><span class="input-group-text">min</span>
             </div>
           </div>
           <div class="col mb-3">
-            <label class="form-label">Distance</label>
+            <label class="form-label"><strong>Distance</strong></label>
             <div class="input-group">
               <input class="form-control" type="number" readonly placeholder="enter start and end station" /><span class="input-group-text">km</span>
             </div>
           </div>
           <div class="col mb-3">
-            <label class="form-label">Price</label>
+            <label class="form-label"><strong>Price</strong></label>
             <div class="input-group">
               <input class="form-control" type="number" step="0.01" placeholder="Enter price" /><span class="input-group-text"
                 ><i class="fa-solid fa-euro-sign"></i
