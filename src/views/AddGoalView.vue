@@ -1,16 +1,60 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useToast } from 'vue-toastification'
+import axios from 'axios'
+import router from '@/router'
 import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
 
 const goalTypes = ref([
-  { id: 'type1', label: 'Coverage goal' },
-  { id: 'type2', label: 'Quantitative goal' },
-  { id: 'type3', label: 'Price target' },
-  { id: 'type4', label: 'Predefined goals' },
+  { id: 'cover', label: 'Coverage goal' },
+  { id: 'quant', label: 'Quantitative goal' },
+  { id: 'price', label: 'Price target' },
+  { id: 'predef', label: 'Predefined goals' },
 ])
 
+const isType1 = computed(() => formData.goalType === goalTypes.value[0].id)
+const isType2 = computed(() => formData.goalType === goalTypes.value[1].id)
+const isType3 = computed(() => formData.goalType === goalTypes.value[2].id)
+const isType4 = computed(() => formData.goalType === goalTypes.value[3].id)
+
+const coverCountObjects = ref([
+  { id: 's', label: 'Stations', cover: true, count: true },
+  { id: 'trk', label: 'Train Route Kilometres', cover: true, count: true },
+  { id: 't', label: 'Trips', cover: false, count: true },
+])
+
+const coverObjects = computed(() => {
+  return coverCountObjects.value.filter((obj) => obj.cover)
+})
+
+const countObjects = computed(() => {
+  return coverCountObjects.value.filter((obj) => obj.count)
+})
+
+const states = ref([
+  { id: 'V', label: 'Vienna' },
+  { id: 'UA', label: 'Upper Austria' },
+  { id: 'LA', label: 'Lower Austria' },
+  { id: 'B', label: 'Burgenland' },
+  { id: 'ST', label: 'Styria' },
+  { id: 'C', label: 'Carinthia' },
+  { id: 'S', label: 'Salzburg' },
+  { id: 'T', label: 'Tyrol' },
+  { id: 'VO', label: 'Vorarlberg' },
+])
+
+// TODO: retrieve from DB
+const predefinedGoals = ref([
+  { id: '1', label: 'visit all federal states' },
+  { id: '2', label: 'visit all state capitals' },
+  { id: '3', label: 'visit capital city Vienna' },
+  { id: '4', label: 'visit the north-/east-/south-/west-most station in Austria' },
+  { id: '5', label: 'visit routes along rivers, lakes and mountains' },
+])
+
+// TODO: retrieve from DB
 const friends = ref([
   { id: 'formCheck-1', label: 'Friend 1', value: 'friend1' },
   { id: 'formCheck-2', label: 'Friend 2', value: 'friend2' },
@@ -18,6 +62,7 @@ const friends = ref([
   { id: 'formCheck-4', label: 'Friend 4', value: 'friend4' },
 ])
 
+// TODO: retrieve from DB
 const categories = ref([
   { id: 'defaultCat', label: 'Default', value: 'default', color: 'success' },
   { id: 'defaultCat-2', label: 'cat2', value: 'cat2', color: 'danger' },
@@ -30,25 +75,49 @@ const formData = reactive({
   endDate: '',
   selectedFriends: [],
   selectedCategory: '',
-  isPercentage: false,
+  isPercentage: true,
   coverNumber: 0,
+  coverObject: '',
+  countNumber: 0,
+  countObject: '',
+  federalState: 'AT',
+  price: 0.0,
+  predefinedGoal: '',
 })
 
-const handleSubmit = () => {
-  // Handle form submission logic
-  console.log('Form submitted', formData)
-  // check if all required inputs are filled depending on the goal type here instead of adding "required" to the input fields
-}
+const toast = useToast()
 
-const isType1 = computed(() => formData.goalType === 'type1')
-const isType2 = computed(() => formData.goalType === 'type2')
-const isType3 = computed(() => formData.goalType === 'type3')
-const isType4 = computed(() => formData.goalType === 'type4')
+const handleSubmit = async () => {
+  const newGoal = {
+    goalType: formData.goalType,
+    startDate: formData.startDate,
+    endDate: formData.endDate,
+    selectedFriends: formData.selectedFriends,
+    selectedCategory: formData.selectedCategory,
+    isPercentage: formData.isPercentage,
+    coverNumber: formData.coverNumber,
+    coverObject: formData.coverObject,
+    countNumber: formData.countNumber,
+    countObject: formData.countObject,
+    federalState: formData.federalState,
+    price: formData.price,
+    predefinedGoal: formData.predefinedGoal,
+  }
+
+  try {
+    const response = await axios.post('/api/goal', newGoal)
+    toast.success('Goal created successfully.')
+    router.push('/goals')
+  } catch (error) {
+    console.error('Error creating goal: ', error)
+    toast.error('Could not create goal. Please try again.')
+  }
+}
 </script>
 
 <template>
   <h3 class="text-dark mb-4">Add Goal</h3>
-  <form @submit.prevent="handleSubmit" novalidate>
+  <form @submit.prevent="handleSubmit">
     <div class="row mb-5 justify-content-center">
       <label class="col-md-2 col-sm-3 col-form-label text-md-end" for="goalTypeSelect"><strong>Goal Type:</strong></label>
       <div class="col-md-3">
@@ -70,21 +139,20 @@ const isType4 = computed(() => formData.goalType === 'type4')
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>How much (value mustn't exceed the total amount)?</strong></label>
                 <div class="input-group">
-                  <input v-model="formData.coverNumber" class="form-control" type="number" step="0.01" />
+                  <input v-model="formData.coverNumber" class="form-control" type="number" step="1" required />
                   <div class="input-group-text">
-                    <input type="checkbox" v-model="formData.isPercentage" class="d-none" id="togglePercentage" />
+                    <input type="checkbox" v-model="formData.isPercentage" class="d-none" id="togglePercentage" required />
                     <label for="togglePercentage" class="m-0">
-                      <i :class="formData.isPercentage ? 'fa-solid fa-hashtag' : 'fa-solid fa-percent'"></i>
+                      <i :class="formData.isPercentage ? 'fa-solid fa-percent' : 'fa-solid fa-hashtag'"></i>
                     </label>
                   </div>
                 </div>
               </div>
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>What?</strong></label
-                ><select id="coverObject" class="form-select">
+                ><select v-model="formData.coverObject" class="form-select" required>
                   <option value="" selected disabled>pls select what you want to cover</option>
-                  <option value="coverWhatId2">Stations</option>
-                  <option value="coverWhatId1">Train Route Kilometres</option>
+                  <option v-for="obj in coverObjects" :key="obj.id" :value="obj.id">{{ obj.label }}</option>
                 </select>
               </div>
             </div>
@@ -93,15 +161,13 @@ const isType4 = computed(() => formData.goalType === 'type4')
             <div class="row justify-content-center">
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>How many?</strong></label>
-                <input v-model="formData.quantitativeNumber" class="form-control" type="number" />
+                <input v-model="formData.countNumber" class="form-control" type="number" step="1" required />
               </div>
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>What?</strong></label
-                ><select id="coverObject" class="form-select">
+                ><select v-model="formData.countObject" class="form-select" required>
                   <option value="" selected disabled>pls select what you want to count</option>
-                  <option value="coverWhatId2">Stations</option>
-                  <option value="coverWhatId1">Train Route Kilometres</option>
-                  <option value="coverWhatId3">Trips</option>
+                  <option v-for="obj in countObjects" :key="obj.id" :value="obj.id">{{ obj.label }}</option>
                 </select>
               </div>
             </div>
@@ -110,30 +176,25 @@ const isType4 = computed(() => formData.goalType === 'type4')
           <div class="row">
             <div v-if="isType1 || isType2" class="col-md-4 mb-3">
               <label class="form-label"><strong>Federal State</strong></label
-              ><select id="predefinedGoal" class="form-select">
-                <option value="" selected>-</option>
-                <option value="goal1id">Upper Austria</option>
-                <option value="goal2id">Vienna</option>
-                <option value="goal3id">Styria</option>
+              ><select v-model="formData.federalState" class="form-select" required>
+                <option value="AT" selected>none (Austria)</option>
+                <option v-for="state in states" :key="state.id" :value="state.id">{{ state.label }}</option>
               </select>
             </div>
             <div v-if="isType3" class="col-md-4 mb-3">
               <label class="form-label"><strong>Price</strong></label>
               <div class="input-group">
-                <input class="form-control" type="number" step="0.01" placeholder="Enter price" /><span class="input-group-text"
+                <input v-model="formData.price" class="form-control" type="number" step="0.01" placeholder="Enter price" required /><span
+                  class="input-group-text"
                   ><i class="fa-solid fa-euro-sign"></i
                 ></span>
               </div>
             </div>
             <div v-if="isType4" class="col-md-4 mb-3">
               <label class="form-label"><strong>Goal</strong></label
-              ><select id="predefinedGoal" class="form-select">
+              ><select class="form-select" v-model="formData.predefinedGoal" required>
                 <option value="" selected disabled>pls select a predefined goal</option>
-                <option value="goal1id">visit all federal states</option>
-                <option value="goal2id">visit all state capitals</option>
-                <option value="goal3id">visit capital city Vienna</option>
-                <option value="goal4id">visit the north-/east-/south-/west-most station in Austria</option>
-                <option value="goal5id">visit routes along rivers, lakes and mountains</option>
+                <option v-for="g in predefinedGoals" :key="g.id" :value="g.id">{{ g.label }}</option>
               </select>
             </div>
             <div class="col-md-4 mb-3">

@@ -15,13 +15,14 @@ const props = defineProps({
 
 const goals = ref([])
 const loading = ref(false)
+const today = new Date()
 
 const generateDummyGoals = () => {
   return {
     data: [
       {
         id: 1,
-        goalType: 'type1',
+        goalType: 'cover',
         description: 'Cover 12% of stations',
         startDate: '2023-01-01',
         endDate: '2023-02-02',
@@ -33,7 +34,7 @@ const generateDummyGoals = () => {
       },
       {
         id: 2,
-        goalType: 'type2',
+        goalType: 'quant',
         description: 'Do 50 trips',
         startDate: '2023-01-01',
         endDate: '',
@@ -45,7 +46,7 @@ const generateDummyGoals = () => {
       },
       {
         id: 3,
-        goalType: 'type3',
+        goalType: 'price',
         description: 'Travel for 50€ worth of ticket prices',
         startDate: '',
         endDate: '2029-02-02',
@@ -57,7 +58,7 @@ const generateDummyGoals = () => {
       },
       {
         id: 4,
-        goalType: 'type4',
+        goalType: 'predef',
         description: 'Visit all state capitals',
         startDate: '2026-01-01',
         endDate: '2027-02-02',
@@ -69,7 +70,7 @@ const generateDummyGoals = () => {
       },
       {
         id: 5,
-        goalType: 'type4',
+        goalType: 'predef',
         description: 'Visit Vienna',
         startDate: '2024-01-01',
         endDate: '2026-02-02',
@@ -99,10 +100,9 @@ const fetchGoalsData = async () => {
 const filteredGoals = computed(() => {
   let filtered = goals.value
 
-  // Apply filter option
+  // apply filter option
   if (props.filterOption && props.filterOption !== 'none') {
     filtered = filtered.filter((goal) => {
-      const today = new Date()
       const startDate = goal.startDate ? new Date(goal.startDate) : new Date(-8640000000000000) // Min date
       const endDate = goal.endDate ? new Date(goal.endDate) : new Date(8640000000000000) // Max date
 
@@ -122,7 +122,7 @@ const filteredGoals = computed(() => {
     })
   }
 
-  // Apply sorting
+  // apply sorting
   if (props.sortOption && props.sortOption !== 'none') {
     const [sortKey, sortOrder] = props.sortOption.split('_')
     filtered = filtered.sort((a, b) => {
@@ -144,7 +144,7 @@ const filteredGoals = computed(() => {
     })
   }
 
-  // Apply limit
+  // apply limit
   if (props.limit) {
     filtered = filtered.slice(0, props.limit)
   }
@@ -152,18 +152,15 @@ const filteredGoals = computed(() => {
   return filtered
 })
 
+// TODO: retrieve from the database
 const goalTypeIcons = {
-  type1: 'fa-percentage',
-  type2: 'fa-hashtag',
-  type3: 'fa-money-bill',
-  type4: 'fa-list-check',
+  cover: 'fa-percentage',
+  quant: 'fa-hashtag',
+  price: 'fa-money-bill',
+  predef: 'fa-list-check',
 }
 
 onMounted(fetchGoalsData)
-
-/*
-same as we did with Trips i want to make the GoalsView in a nice composition manner. The goal cards (i.e. the entire list) should be in a seperate component as i plan to show them somewhere else. The props will be the filterOption, sortOption and limit number. Default values for limit and sort. 
-*/
 </script>
 
 <template>
@@ -173,10 +170,10 @@ same as we did with Trips i want to make the GoalsView in a nice composition man
       <div
         :class="[
           `card shadow border-left-${goal.categoryColor} py-0`,
-          { completed: goal.progress >= 100, notcompleted: goal.progress < 100 && new Date(goal.endDate) < new Date() },
+          { completed: goal.progress >= 100, notcompleted: goal.progress < 100 && new Date(goal.endDate) < today },
         ]"
       >
-        <div :class="['card-body', { past: new Date(goal.endDate) < new Date() }]">
+        <div :class="['card-body', { past: new Date(goal.endDate) < today }]">
           <div class="row g-0 align-items-center">
             <div class="col">
               <div class="text-uppercase text-dark font-monospace fw-bold text-sm mb-1">{{ goal.description }}</div>

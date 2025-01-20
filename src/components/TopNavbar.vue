@@ -76,7 +76,7 @@ import { RouterLink } from 'vue-router'
               <h6 class="dropdown-header">alerts center</h6>
               <a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
-                  <img class="rounded-circle" src="@/assets/logo.svg" />
+                  <img class="rounded-circle" src="@/assets/dog.png" />
                   <div class="bg-success status-indicator"></div>
                 </div>
                 <div class="fw-bold">
@@ -85,7 +85,7 @@ import { RouterLink } from 'vue-router'
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
-                  <img class="rounded-circle" src="@/assets/logo.svg" />
+                  <img class="rounded-circle" src="@/assets/dog.png" />
                   <div class="status-indicator"></div>
                 </div>
                 <div class="fw-bold">
@@ -94,7 +94,7 @@ import { RouterLink } from 'vue-router'
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
-                  <img class="rounded-circle" src="@/assets/logo.svg" />
+                  <img class="rounded-circle" src="@/assets/dog.png" />
                   <div class="bg-warning status-indicator"></div>
                 </div>
                 <div class="fw-bold">
@@ -105,7 +105,7 @@ import { RouterLink } from 'vue-router'
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
-                  <img class="rounded-circle" src="@/assets/logo.svg" />
+                  <img class="rounded-circle" src="@/assets/dog.png" />
                   <div class="bg-success status-indicator"></div>
                 </div>
                 <div class="fw-bold">
@@ -127,7 +127,7 @@ import { RouterLink } from 'vue-router'
           <div class="nav-item dropdown no-arrow">
             <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"
               ><span class="d-none d-lg-inline me-2 text-gray-600 small">raso_username73</span
-              ><img class="border rounded-circle img-profile" src="@/assets/logo.svg"
+              ><img class="border rounded-circle img-profile" src="@/assets/dog.png"
             /></a>
             <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
               <a class="dropdown-item" href="#"><i class="fa-solid fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a

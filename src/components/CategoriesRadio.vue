@@ -11,6 +11,7 @@ const selectedCategory = defineModel('selectedCategory', {
 })
 
 onMounted(() => {
+  // set the "default" category to be selected by default (ALWAYS the first category returned by the DB)
   if (!selectedCategory.value && props.categories.length > 0) {
     selectedCategory.value = props.categories[0].value
   }

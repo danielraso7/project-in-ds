@@ -56,12 +56,11 @@ const generateDummyTrips = () => {
         description: 'Weekend getaway',
         friends: ['Charlie'],
       },
-      // Add more dummy trips as needed
     ],
   }
 }
 
-const fetchTripsData = async () => {
+/* const fetchTripsData = async () => {
   loading.value = true
   try {
     const response = generateDummyTrips() // await fetchTrips() // Fetch trips from the database
@@ -71,12 +70,12 @@ const fetchTripsData = async () => {
   } finally {
     loading.value = false
   }
-}
+} */
 
 const filteredTrips = computed(() => {
   let filtered = trips.value
 
-  // Apply search query filter
+  // apply search query filter
   if (props.searchQuery) {
     const query = props.searchQuery.toLowerCase()
     filtered = filtered.filter(
@@ -84,12 +83,12 @@ const filteredTrips = computed(() => {
     )
   }
 
-  // Apply filter option
+  // apply filter option
   if (props.filterOption && props.filterOption !== 'none') {
     filtered = filtered.filter((trip) => trip.category === props.filterOption || trip.friends.includes(props.filterOption))
   }
 
-  // Apply sorting
+  // apply sorting
   if (props.sortOption && props.sortOption !== 'none') {
     const [sortKey, sortOrder] = props.sortOption.split('_')
     filtered = filtered.sort((a, b) => {
@@ -101,7 +100,7 @@ const filteredTrips = computed(() => {
     })
   }
 
-  // Apply limit
+  // apply limit
   if (props.limit) {
     filtered = filtered.slice(0, props.limit)
   }
@@ -136,7 +135,7 @@ onMounted(fetchTripsData)
   <div class="card shadow">
     <div class="card-body">
       <div v-if="loading" class="text-center">Loading...</div>
-      <div v-else id="dataTable" class="table-responsive table" role="grid">
+      <div v-else id="dataTableGrid" class="table-responsive table" role="grid">
         <table id="dataTable" class="table my-0">
           <thead>
             <tr>
@@ -187,6 +186,7 @@ onMounted(fetchTripsData)
               <th>Duration (min)</th>
               <th>Distance (km)</th>
               <th>Price (€)</th>
+              <th>Actions</th>
             </tr>
           </tfoot>
         </table>

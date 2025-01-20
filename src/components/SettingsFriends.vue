@@ -69,28 +69,31 @@ onMounted(fetchFriends)
           <h6 class="text-primary m-0 fw-bold">Friends List</h6>
         </div>
         <div class="card-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="friend in friends" :key="friend.username">
-                <td>{{ friend.username }}</td>
-                <td>{{ friend.firstName }}</td>
-                <td>{{ friend.lastName }}</td>
-                <td>
-                  <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.username)">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div v-if="loading" class="text-center">Loading...</div>
+          <div v-else id="dataTableGrid" class="table-responsive table" role="grid">
+            <table class="table my-0">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="friend in friends" :key="friend.username">
+                  <td>{{ friend.username }}</td>
+                  <td>{{ friend.firstName }}</td>
+                  <td>{{ friend.lastName }}</td>
+                  <td>
+                    <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.username)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

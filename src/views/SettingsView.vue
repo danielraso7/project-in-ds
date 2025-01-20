@@ -14,7 +14,7 @@ const setActiveTab = (tab) => {
 <template>
   <h3 class="text-dark mb-4">Settings</h3>
   <div class="row mx-1">
-    <ul class="nav nav-tabs w-100 justify-content-between custom-nav-tabs">
+    <ul class="nav nav-tabs w-100 justify-content-between custom-nav-tabs" style="padding-right: 0">
       <li class="nav-item flex-fill text-center">
         <a class="nav-link" :class="{ active: activeTab === 'profile' }" @click="setActiveTab('profile')" href="#"
           ><i class="fa-solid fa-user"></i>&nbsp;Profile</a
@@ -48,6 +48,10 @@ const setActiveTab = (tab) => {
 <style lang="css" scoped>
 .nav-tabs .nav-item {
   flex: 1;
+  margin-right: 1rem;
+}
+.nav-tabs .nav-item:last-child {
+  margin-right: 0; /* Remove right margin for the last item */
 }
 .nav-tabs .nav-link {
   width: 100%;

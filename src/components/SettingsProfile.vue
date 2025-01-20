@@ -1,11 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import SubmitButton from '@/components/SubmitButton.vue'
 
-// Simulate fetching data from a database
+// TODO: DB
 const klimaticketType = ref(false) // false for classic, true for special
 
-const handleSubmit = () => {
+// TODO: DB???
+const formData = reactive({
+  username: 'raso_username73',
+  email: 'danielraso@gmail.com',
+  pwd: 'mysavepassword',
+  first_name: 'Daniel',
+  last_name: 'Raso',
+})
+
+const handleSubmit = async () => {
   // Handle form submission logic
   console.log('Klimaticket Type updated:', klimaticketType.value)
   // Update the Klimaticket type in the database
@@ -17,7 +26,7 @@ const handleSubmit = () => {
     <div class="col-lg-4">
       <div class="card shadow mb-3">
         <div class="card-body text-center shadow">
-          <img class="rounded-circle mb-3 mt-4" src="@/assets/logo.svg" width="160" height="160" />
+          <img class="rounded-circle mb-3 mt-4" src="@/assets/dog.png" width="160" height="160" />
           <SubmitButton :button-text="'Change Photo'" />
         </div>
       </div>
@@ -30,24 +39,40 @@ const handleSubmit = () => {
               <h6 class="text-primary m-0 fw-bold">User Settings</h6>
             </div>
             <div class="card-body">
-              <form>
+              <form @submit.prevent="">
                 <div class="row">
                   <div class="col-md-4">
                     <div class="mb-3">
                       <label class="form-label" for="username"><strong>Username</strong></label
-                      ><input id="username" class="form-control" type="text" placeholder="user.name" name="username" />
+                      ><input
+                        id="username"
+                        class="form-control"
+                        type="text"
+                        placeholder="user.name"
+                        name="username"
+                        v-model="formData.username"
+                        required
+                      />
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="mb-3">
                       <label class="form-label" for="email"><strong>Email Address</strong></label
-                      ><input id="email" class="form-control" type="email" placeholder="user@example.com" name="email" />
+                      ><input
+                        id="email"
+                        class="form-control"
+                        type="email"
+                        placeholder="user@example.com"
+                        name="email"
+                        v-model="formData.email"
+                        required
+                      />
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="mb-3">
                       <label class="form-label" for="pwd"><strong>Password</strong></label
-                      ><input id="pwd" class="form-control" type="password" placeholder="mysavepassword" name="pwd" />
+                      ><input id="pwd" class="form-control" type="password" placeholder="mysavepassword" name="pwd" v-model="formData.pwd" required />
                     </div>
                   </div>
                 </div>
@@ -55,13 +80,29 @@ const handleSubmit = () => {
                   <div class="col-md-6">
                     <div class="mb-3">
                       <label class="form-label" for="first_name"><strong>First Name</strong></label
-                      ><input id="first_name" class="form-control" type="text" placeholder="John" name="first_name" />
+                      ><input
+                        id="first_name"
+                        class="form-control"
+                        type="text"
+                        placeholder="John"
+                        name="first_name"
+                        v-model="formData.first_name"
+                        required
+                      />
                     </div>
                   </div>
                   <div class="col">
                     <div class="mb-3">
                       <label class="form-label" for="last_name"><strong>Last Name</strong></label
-                      ><input id="last_name" class="form-control" type="text" placeholder="Doe" name="last_name" />
+                      ><input
+                        id="last_name"
+                        class="form-control"
+                        type="text"
+                        placeholder="Doe"
+                        name="last_name"
+                        v-model="formData.last_name"
+                        required
+                      />
                     </div>
                   </div>
                 </div>

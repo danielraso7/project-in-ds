@@ -5,7 +5,7 @@ import SubmitButton from '@/components/SubmitButton.vue'
 // Simulate fetching data from a database
 const categories = ref([])
 const newCategoryName = ref('')
-const newCategoryColor = ref('primary') // Default color
+const newCategoryColor = ref('success') // Default color
 const loading = ref(false)
 
 const bootstrapColors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
@@ -13,10 +13,11 @@ const bootstrapColors = ['primary', 'secondary', 'success', 'danger', 'warning',
 const fetchCategories = async () => {
   // Simulate an API call to fetch categories from the database
   categories.value = [
-    { name: 'Work', color: 'primary', tripCount: 10, distance: 150 },
-    { name: 'Personal', color: 'success', tripCount: 5, distance: 80 },
+    { name: 'Work', color: 'primary', tripCount: 10, distance: 150, duration: 300 },
+    { name: 'Personal', color: 'success', tripCount: 5, distance: 80, duration: 120 },
     // Add more categories as needed
   ]
+  console.log('Categories fetched:', categories.value)
 }
 
 const addCategory = async () => {
@@ -26,7 +27,7 @@ const addCategory = async () => {
   if (success) {
     await fetchCategories() // Reload the categories list
     newCategoryName.value = '' // Clear the input field
-    newCategoryColor.value = 'primary' // Reset the color
+    newCategoryColor.value = 'success' // Reset the color
   } else {
     alert('Failed to add category. Please try again.')
   }
@@ -37,6 +38,12 @@ const cycleColor = () => {
   const currentIndex = bootstrapColors.indexOf(newCategoryColor.value)
   const nextIndex = (currentIndex + 1) % bootstrapColors.length
   newCategoryColor.value = bootstrapColors[nextIndex]
+}
+
+const durationHHMM = (duration) => {
+  const hours = Math.floor(duration / 60)
+  const minutes = duration % 60
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
 onMounted(fetchCategories)
@@ -76,24 +83,29 @@ onMounted(fetchCategories)
           <h6 class="text-primary m-0 fw-bold">Categories List</h6>
         </div>
         <div class="card-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Trip Count</th>
-                <th>Distance</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="category in categories" :key="category.name">
-                <td>
-                  <span :class="`badge text-bg-${category.color} rounded-pill`">{{ category.name }}</span>
-                </td>
-                <td>{{ category.tripCount }}</td>
-                <td>{{ category.distance }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div v-if="loading" class="text-center">Loading...</div>
+          <div v-else id="dataTableGrid" class="table-responsive table" role="grid">
+            <table class="table my-0">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Trip Count</th>
+                  <th>Duration (h)</th>
+                  <th>Distance (km)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="category in categories" :key="category.name">
+                  <td>
+                    <span :class="`badge text-bg-${category.color} rounded-pill`">{{ category.name }}</span>
+                  </td>
+                  <td>{{ category.tripCount }}</td>
+                  <td>{{ durationHHMM(category.duration) }}</td>
+                  <td>{{ category.distance }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
