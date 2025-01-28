@@ -17,8 +17,6 @@ export function useCategory() {
 
     try {
       const response = await axios.get(`${backendUrl}/categories`)
-      console.log('hiiiii')
-      console.log(response)
       categories.value = response.data
     } catch (ex) {
       error.value = ex
