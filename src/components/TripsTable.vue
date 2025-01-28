@@ -1,6 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-// import { fetchTrips, deleteTripById } from '@/api/trips' // Assume you have API functions to fetch and delete trips
+import { useTrips } from '@/composables/useTrips'
+import { useStationsStore } from '@/stores/stations'
+import { useFriend } from '@/composables/useFriend'
+
+const { friends, fetchFriends } = useFriend()
+const { trips, loading, fetchTrips, deleteTripById } = useTrips()
+const stationsStore = useStationsStore()
 
 const props = defineProps({
   searchQuery: String,
@@ -15,62 +21,30 @@ const props = defineProps({
   },
 })
 
-const trips = ref([])
-const loading = ref(false)
-const tripDetails = ref({ stops: '', description: '', friends: '' })
+const tripDetails = ref({ stops: [], description: '', friends: '' })
 
-const updateShownTripDetails = (stops, description, friends) => {
-  tripDetails.value.stops = stops
+const updateShownTripDetails = (stops, description, friendsUsernames) => {
+  tripDetails.value.stops = stops.map((netex_id) => stationsStore.stations[netex_id].name_snnb)
   tripDetails.value.description = description
-  tripDetails.value.friends = friends
+  tripDetails.value.friends = friendsUsernames
+    .map((username) => {
+      const friend = friends.value.find((f) => f.username === username)
+      return friend ? friend.firstname : username
+    })
+    .join(', ')
 }
 
-const generateDummyTrips = () => {
-  return {
-    data: [
-      {
-        id: 1,
-        from: 'New York',
-        to: 'Los Angeles',
-        date: '2023-01-01',
-        duration: '515',
-        distance: '4500',
-        price: '300',
-        category: 'Business',
-        categoryColor: 'primary',
-        stops: ['Chicago', 'Denver'],
-        description: 'Business trip to LA',
-        friends: ['Alice', 'Bob'],
-      },
-      {
-        id: 2,
-        from: 'San Francisco',
-        to: 'Seattle',
-        date: '2023-02-15',
-        duration: '220',
-        distance: '1300',
-        price: '150',
-        category: 'Leisure',
-        categoryColor: 'success',
-        stops: ['Portland'],
-        description: 'Weekend getaway',
-        friends: ['Charlie'],
-      },
-    ],
-  }
-}
-
-/* const fetchTripsData = async () => {
-  loading.value = true
-  try {
-    const response = generateDummyTrips() // await fetchTrips() // Fetch trips from the database
-    trips.value = response.data
-  } catch (error) {
-    console.error('Error fetching trips:', error)
-  } finally {
-    loading.value = false
-  }
-} */
+const stopsWithIcons = computed(() => {
+  return tripDetails.value.stops
+    .map((stop, index) => {
+      if (index < tripDetails.value.stops.length - 1) {
+        return `${stop} <i class="fa-solid fa-right-long"></i>`
+      } else {
+        return stop
+      }
+    })
+    .join(' ')
+})
 
 const filteredTrips = computed(() => {
   let filtered = trips.value
@@ -79,7 +53,10 @@ const filteredTrips = computed(() => {
   if (props.searchQuery) {
     const query = props.searchQuery.toLowerCase()
     filtered = filtered.filter(
-      (trip) => trip.from.toLowerCase().includes(query) || trip.to.toLowerCase().includes(query) || trip.description.toLowerCase().includes(query),
+      (trip) =>
+        stationsStore.stations[trip.from].name_snnb.toLowerCase().includes(query) ||
+        stationsStore.stations[trip.to].name_snnb.toLowerCase().includes(query) ||
+        trip.description.toLowerCase().includes(query),
     )
   }
 
@@ -92,10 +69,22 @@ const filteredTrips = computed(() => {
   if (props.sortOption && props.sortOption !== 'none') {
     const [sortKey, sortOrder] = props.sortOption.split('_')
     filtered = filtered.sort((a, b) => {
-      if (sortOrder === 'asc') {
-        return a[sortKey] > b[sortKey] ? 1 : -1
+      let aFinal, bFinal
+      if (sortKey === 'from' || sortKey === 'to') {
+        aFinal = stationsStore.stations[a[sortKey]].name_snnb
+        bFinal = stationsStore.stations[b[sortKey]].name_snnb
+      } else if (sortKey === 'category') {
+        aFinal = a[sortKey].toLowerCase()
+        bFinal = b[sortKey].toLowerCase()
       } else {
-        return a[sortKey] < b[sortKey] ? 1 : -1
+        aFinal = a[sortKey]
+        bFinal = b[sortKey]
+      }
+
+      if (sortOrder === 'asc') {
+        return aFinal > bFinal ? 1 : -1
+      } else {
+        return aFinal < bFinal ? 1 : -1
       }
     })
   }
@@ -114,20 +103,15 @@ watch(filteredTrips, (newFilteredTrips) => {
   emit('update:filteredTrips', newFilteredTrips)
 })
 
-const deleteTrip = async (tripId) => {
-  const confirmed = confirm('Are you sure you want to delete this trip?')
-
-  if (confirmed) {
-    try {
-      await deleteTripById(tripId) // Delete trip by ID
-      await fetchTripsData() // Reload trips data
-    } catch (error) {
-      console.error('Error deleting trip:', error)
-    }
-  }
+const handleDelete = async (id) => {
+  await deleteTripById(id)
 }
 
-onMounted(fetchTripsData)
+onMounted(async () => {
+  stationsStore.initializeStations()
+  await fetchTrips()
+  await fetchFriends()
+})
 // watch([props.searchQuery, props.filterOption, props.sortOption], fetchTripsData)
 </script>
 
@@ -151,8 +135,8 @@ onMounted(fetchTripsData)
           </thead>
           <tbody>
             <tr v-for="trip in filteredTrips" :key="trip.id">
-              <td>{{ trip.from }}</td>
-              <td>{{ trip.to }}</td>
+              <td>{{ stationsStore.stations[trip.from].name_snnb }}</td>
+              <td>{{ stationsStore.stations[trip.to].name_snnb }}</td>
               <td>
                 <span :class="`badge bg-${trip.categoryColor}`">{{ trip.category }}</span>
               </td>
@@ -162,7 +146,7 @@ onMounted(fetchTripsData)
               <td>{{ trip.price }}</td>
 
               <td>
-                <button class="btn btn-outline-danger btn-sm me-2" @click="deleteTrip(trip.id)">
+                <button class="btn btn-outline-danger btn-sm me-2" @click="handleDelete(trip.id)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
                 <button
@@ -170,7 +154,7 @@ onMounted(fetchTripsData)
                   class="btn btn-outline-info btn-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#tripDetails"
-                  @click="updateShownTripDetails(trip.stops.join(', '), trip.description, trip.friends.join(', '))"
+                  @click="updateShownTripDetails(trip.stops, trip.description, trip.friends)"
                 >
                   <i class="fa-solid fa-info-circle"></i>
                 </button>
@@ -206,7 +190,10 @@ onMounted(fetchTripsData)
             <tbody>
               <tr>
                 <th scope="row">Stops</th>
-                <td>{{ tripDetails.stops }}</td>
+                <td>
+                  <div v-html="stopsWithIcons"></div>
+                  <!-- {{ tripDetails.stops }} -->
+                </td>
               </tr>
               <tr>
                 <th scope="row">Description</th>

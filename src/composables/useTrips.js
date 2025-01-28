@@ -20,7 +20,7 @@ export function useTrips() {
       trips.value = response.data
     } catch (ex) {
       error.value = ex
-      toast.error('Could not retrieve trips. Please try again.')
+      toast.error('Could not retrieve trips. Please try again. ' + `${ex.response.data.message ? ex.response.data.message : ''}`)
     } finally {
       loading.value = false
     }
@@ -39,7 +39,7 @@ export function useTrips() {
       toast.success('Trip deleted successfully.')
     } catch (ex) {
       error.value = ex
-      toast.error('Could not delete trip. Please try again.')
+      toast.error('Could not delete trip. Please try again. ' + `${ex.response.data.message ? ex.response.data.message : ''}`)
     } finally {
       loading.value = false
     }
@@ -56,7 +56,7 @@ export function useTrips() {
       router.push('/trips')
     } catch (ex) {
       error.value = ex
-      toast.error('Could not create trip. Please try again.')
+      toast.error('Could not create trip. Please try again. ' + `${ex.response.data.message ? ex.response.data.message : ''}`)
     } finally {
       loading.value = false
     }

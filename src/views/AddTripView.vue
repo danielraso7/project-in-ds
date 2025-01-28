@@ -1,36 +1,22 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import { useTrips } from '@/composables/useTrips'
+import { useCategory } from '@/composables/useCategory'
+import { useFriend } from '@/composables/useFriend'
+import { useStationsStore } from '@/stores/stations'
 
-// TODO: retrieve from DB
-const friends = ref([
-  { id: 'formCheck-1', label: 'Friend 1', value: 'friend1' },
-  { id: 'formCheck-2', label: 'Friend 2', value: 'friend2' },
-  { id: 'formCheck-3', label: 'Friend 3', value: 'friend3' },
-  { id: 'formCheck-4', label: 'Friend 4', value: 'friend4' },
-  { id: 'formCheck-5', label: 'Friend 5', value: 'friend5' },
-])
-
-// TODO: retrieve from DB
-const categories = ref([
-  { id: 'defaultCat', label: 'Default', value: 'default', color: 'success' },
-  { id: 'defaultCat-2', label: 'cat2', value: 'cat2', color: 'danger' },
-  { id: 'defaultCat-1', label: 'cat4', value: 'cat4', color: 'warning' },
-])
-
-// TODO: retrieve from DB
-const stationsList = ref([
-  { id: 1, name: 'Station 1' },
-  { id: 2, name: 'Station 2' },
-  { id: 3, name: 'Station 3' },
-])
+const { createTrip } = useTrips()
+const { categories, fetchCategories } = useCategory()
+const { friends, fetchFriends } = useFriend()
+const stationsStore = useStationsStore()
 
 const formData = reactive({
   date: '',
   selectedFriends: [],
-  selectedCategory: '',
+  selectedCategory: null,
   fromStation: '',
   toStation: '',
   stops: [],
@@ -40,15 +26,31 @@ const formData = reactive({
   price: null,
 })
 
+watch(
+  () => [formData.fromStation, formData.toStation],
+  ([newFromStation, newToStation]) => {
+    if (newFromStation && newToStation) {
+      fillStops()
+      formData.distance = Math.floor(Math.random() * 100) + 1
+    }
+  },
+)
+
+const fillStops = () => {
+  const stationKeys = Object.keys(stationsStore.stations)
+  const randomAmount = Math.floor(Math.random() * 5) + 2 // Random number between 2 and 6
+  const shuffledKeys = stationKeys.sort(() => 0.5 - Math.random()) // Shuffle the keys
+  formData.stops = shuffledKeys.slice(0, randomAmount) // Select the first randomCount keys
+}
+
 const stopsString = computed(() => {
-  return formData.stops.join(' -> ')
+  if (!formData.stops.length) return 'Enter start and end station'
+  return formData.stops.map((netex_id) => stationsStore.stations[netex_id].name_snnb).join(' <i class="fa-solid fa-right-long"></i> ')
 })
 // TODO: calculate stops based on selected stations
 // TODO: calculate distance based on selected stations
 
-const toast = useToast()
-
-const handleSubmit = async () => {
+const handleCreate = async () => {
   const newTrip = {
     date: formData.date,
     selectedFriends: formData.selectedFriends,
@@ -61,16 +63,14 @@ const handleSubmit = async () => {
     distance: formData.distance,
     price: formData.price,
   }
-
-  try {
-    const response = await axios.post('/api/trip', newTrip)
-    toast.success('Trip created successfully.')
-    router.push('/trips')
-  } catch (error) {
-    console.error('Error creating trip: ', error)
-    toast.error('Could not create trip. Please try again.')
-  }
+  await createTrip(newTrip)
 }
+
+onMounted(async () => {
+  stationsStore.initializeStations()
+  await fetchCategories()
+  await fetchFriends()
+})
 </script>
 
 <template>
@@ -80,27 +80,27 @@ const handleSubmit = async () => {
       <h6 class="text-primary m-0 fw-bold">Trip Details</h6>
     </div>
     <div class="card-body">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleCreate">
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label"><strong>From</strong></label
             ><select id="fromStation" class="form-select" v-model="formData.fromStation" required>
               <option value="" selected disabled>pls select starting station</option>
-              <option v-for="station in stationsList" :key="station.id" :value="station.name">{{ station.name }}</option>
+              <option v-for="(val, netex_id) in stationsStore.stations" :key="netex_id" :value="netex_id">{{ val.name_snnb }}</option>
             </select>
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label"><strong>To</strong></label
             ><select id="toStation" class="form-select" v-model="formData.toStation" :disabled="!formData.fromStation" required>
               <option value="" selected disabled>pls select end station</option>
-              <option v-for="station in stationsList" :key="station.id" :value="station.name">{{ station.name }}</option>
+              <option v-for="(val, netex_id) in stationsStore.stations" :key="netex_id" :value="netex_id">{{ val.name_snnb }}</option>
             </select>
           </div>
         </div>
         <div class="row">
           <div class="col mb-3">
-            <label class="form-label"><strong>Stops in between</strong></label
-            ><textarea v-model="stopsString" class="form-control" readonly placeholder="Enter start and end station"></textarea>
+            <label class="form-label"><strong>Stops in between</strong></label>
+            <div v-html="stopsString" class="form-control"></div>
           </div>
         </div>
         <div class="row">

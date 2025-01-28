@@ -1,8 +1,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useGoals } from '@/composables/useGoals'
+import { useFriend } from '@/composables/useFriend'
+
+const { friends, fetchFriends } = useFriend()
+const { goals, loading, fetchGoals } = useGoals()
 
 const props = defineProps({
-  filterOption: String,
+  filterOption: {
+    type: String,
+    default: 'active',
+  },
   sortOption: {
     type: String,
     default: 'progress_asc',
@@ -13,89 +21,7 @@ const props = defineProps({
   },
 })
 
-const goals = ref([])
-const loading = ref(false)
 const today = new Date()
-
-const generateDummyGoals = () => {
-  return {
-    data: [
-      {
-        id: 1,
-        goalType: 'cover',
-        description: 'Cover 12% of stations',
-        startDate: '2023-01-01',
-        endDate: '2023-02-02',
-        federalState: 'Upper Austria',
-        category: 'Business',
-        categoryColor: 'primary',
-        friends: ['Alice', 'Bob'],
-        progress: 65,
-      },
-      {
-        id: 2,
-        goalType: 'quant',
-        description: 'Do 50 trips',
-        startDate: '2023-01-01',
-        endDate: '',
-        federalState: 'Austria',
-        category: 'Business',
-        categoryColor: 'primary',
-        friends: ['Alice'],
-        progress: 150,
-      },
-      {
-        id: 3,
-        goalType: 'price',
-        description: 'Travel for 50€ worth of ticket prices',
-        startDate: '',
-        endDate: '2029-02-02',
-        federalState: 'Styria',
-        category: 'Business',
-        categoryColor: 'primary',
-        friends: ['Bob'],
-        progress: 5,
-      },
-      {
-        id: 4,
-        goalType: 'predef',
-        description: 'Visit all state capitals',
-        startDate: '2026-01-01',
-        endDate: '2027-02-02',
-        federalState: 'Austria',
-        category: 'Default',
-        categoryColor: 'success',
-        friends: ['Peter', 'Max'],
-        progress: 50,
-      },
-      {
-        id: 5,
-        goalType: 'predef',
-        description: 'Visit Vienna',
-        startDate: '2024-01-01',
-        endDate: '2026-02-02',
-        federalState: 'Austria',
-        category: 'Default',
-        categoryColor: 'success',
-        friends: ['Peter', 'Max'],
-        progress: 60,
-      },
-      // Add more dummy goals as needed
-    ],
-  }
-}
-
-const fetchGoalsData = async () => {
-  loading.value = true
-  try {
-    const response = generateDummyGoals() // await fetchGoals() // Fetch goals from the database
-    goals.value = response.data
-  } catch (error) {
-    console.error('Error fetching goals:', error)
-  } finally {
-    loading.value = false
-  }
-}
 
 const filteredGoals = computed(() => {
   let filtered = goals.value
@@ -126,20 +52,34 @@ const filteredGoals = computed(() => {
   if (props.sortOption && props.sortOption !== 'none') {
     const [sortKey, sortOrder] = props.sortOption.split('_')
     filtered = filtered.sort((a, b) => {
+      let aFinal, bFinal
       if (sortKey === 'friend') {
-        const aFriends = a.friends.join(', ')
-        const bFriends = b.friends.join(', ')
-        if (sortOrder === 'asc') {
-          return aFriends > bFriends ? 1 : -1
-        } else {
-          return aFriends < bFriends ? 1 : -1
-        }
+        aFinal = a.friends
+          .map((username) => {
+            const friend = friends.value.find((f) => f.username === username)
+            return friend ? friend.firstname : username
+          })
+          .sort()
+          .join(', ')
+        bFinal = b.friends
+          .map((username) => {
+            const friend = friends.value.find((f) => f.username === username)
+            return friend ? friend.firstname : username
+          })
+          .sort()
+          .join(', ')
+      } else if (sortKey === 'category') {
+        aFinal = a[sortKey].toLowerCase()
+        bFinal = b[sortKey].toLowerCase()
       } else {
-        if (sortOrder === 'asc') {
-          return a[sortKey] > b[sortKey] ? 1 : -1
-        } else {
-          return a[sortKey] < b[sortKey] ? 1 : -1
-        }
+        aFinal = a[sortKey]
+        bFinal = b[sortKey]
+      }
+
+      if (sortOrder === 'asc') {
+        return aFinal > bFinal ? 1 : -1
+      } else {
+        return aFinal < bFinal ? 1 : -1
       }
     })
   }
@@ -160,7 +100,10 @@ const goalTypeIcons = {
   predef: 'fa-list-check',
 }
 
-onMounted(fetchGoalsData)
+onMounted(async () => {
+  await fetchFriends()
+  await fetchGoals()
+})
 </script>
 
 <template>
@@ -170,10 +113,10 @@ onMounted(fetchGoalsData)
       <div
         :class="[
           `card shadow border-left-${goal.categoryColor} py-0`,
-          { completed: goal.progress >= 100, notcompleted: goal.progress < 100 && new Date(goal.endDate) < today },
+          { completed: goal.progress >= 100, notcompleted: goal.progress < 100 && goal.endDate && new Date(goal.endDate) < today },
         ]"
       >
-        <div :class="['card-body', { past: new Date(goal.endDate) < today }]">
+        <div :class="['card-body', { past: goal.endDate && new Date(goal.endDate) < today }]">
           <div class="row g-0 align-items-center">
             <div class="col">
               <div class="text-uppercase text-dark font-monospace fw-bold text-sm mb-1">{{ goal.description }}</div>
@@ -182,7 +125,17 @@ onMounted(fetchGoalsData)
                   <div class="text-dark fw-bold text-xs me-3"><i class="fa-solid fa-location-dot fa-sm"></i>&nbsp;{{ goal.federalState }}</div>
                 </div>
                 <div class="col">
-                  <div class="text-dark fw-bold text-xs"><i class="fa-solid fa-user-group fa-sm"></i>&nbsp;{{ goal.friends.join(' ') }}</div>
+                  <div class="text-dark fw-bold text-xs">
+                    <i class="fa-solid fa-user-group fa-sm"></i>&nbsp;{{
+                      goal.friends
+                        .map((username) => {
+                          const friend = friends.find((f) => f.username === username)
+                          return friend ? friend.firstname : username
+                        })
+                        .sort()
+                        .join(', ')
+                    }}
+                  </div>
                 </div>
               </div>
               <div class="row g-0 align-items-center mb-2">
@@ -190,7 +143,7 @@ onMounted(fetchGoalsData)
                   <div class="text-dark fw-bold text-sm me-3">{{ goal.progress }}%</div>
                 </div>
                 <div class="col">
-                  <div class="progress progress-sm">
+                  <div class="progress progress-sm w-80">
                     <div class="progress-bar bg-danger" :style="{ width: goal.progress + '%' }"></div>
                   </div>
                 </div>
@@ -209,10 +162,13 @@ onMounted(fetchGoalsData)
 </template>
 
 <style lang="css" scoped>
+.w-80 {
+  width: 80% !important;
+}
 .watermark-icon {
   position: absolute;
   right: 10px;
-  top: 10px;
+  bottom: 5px;
   opacity: 0.75;
   z-index: 0;
   font-size: 3rem;

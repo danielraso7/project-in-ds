@@ -1,20 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import TripsTable from '@/components/TripsTable.vue'
 import GoalsList from '@/components/GoalsList.vue'
 import BreakEvenChart from '@/components/BreakEvenChart.vue'
+import { useProfile } from '@/composables/useProfile'
 
-// TODO: DB
-const totalTravelCost = ref(0)
-const klimaticketCost = ref(0)
+const { klimaticketCost, totalTravelCost, fetchDashboardInfo } = useProfile()
 
-const fetchData = async () => {
-  // Simulate fetching data from the database
-  totalTravelCost.value = 500 // Replace with actual DB call to get total travel cost
-  klimaticketCost.value = 1095 // Replace with actual DB call to get Klimaticket cost
-}
-
-onMounted(fetchData)
+onMounted(fetchDashboardInfo)
 </script>
 
 <template>

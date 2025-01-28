@@ -44,24 +44,24 @@ import { RouterLink } from 'vue-router'
                   <div class="bg-primary icon-circle"><i class="fa-solid fa-file-alt text-white"></i></div>
                 </div>
                 <div>
-                  <span class="small text-gray-500">December 12, 2019</span>
-                  <p>A new monthly report is ready to download!</p>
+                  <span class="small text-gray-500">December 12, 2024</span>
+                  <p>A new monthly report is ready to be downloaded!</p>
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="me-3">
                   <div class="bg-success icon-circle"><i class="fa-solid fa-donate text-white"></i></div>
                 </div>
                 <div>
-                  <span class="small text-gray-500">December 7, 2019</span>
-                  <p>$290.29 has been deposited into your account!</p>
+                  <span class="small text-gray-500">December 7, 2024</span>
+                  <p>You are finally break-even! Well done traveller!</p>
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="me-3">
                   <div class="bg-warning icon-circle"><i class="fa-solid fa-exclamation-triangle text-white"></i></div>
                 </div>
                 <div>
-                  <span class="small text-gray-500">December 2, 2019</span>
-                  <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                  <span class="small text-gray-500">December 2, 2024</span>
+                  <p>You have a lot of open goals! Go for trip to complete them :)</p>
                 </div> </a
               ><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
             </div>
@@ -81,7 +81,7 @@ import { RouterLink } from 'vue-router'
                 </div>
                 <div class="fw-bold">
                   <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
-                  <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                  <p class="small text-gray-500 mb-0">Max Verstappen - 58m</p>
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
@@ -89,8 +89,8 @@ import { RouterLink } from 'vue-router'
                   <div class="status-indicator"></div>
                 </div>
                 <div class="fw-bold">
-                  <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
-                  <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                  <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                  <p class="small text-gray-500 mb-0">Jean Todd - 1d</p>
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
@@ -99,9 +99,9 @@ import { RouterLink } from 'vue-router'
                 </div>
                 <div class="fw-bold">
                   <div class="text-truncate">
-                    <span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span>
+                    <span>Hi there! I am wondering if you can help me with a problem I've been having.</span>
                   </div>
-                  <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                  <p class="small text-gray-500 mb-0">Michael Schumacher - 2d</p>
                 </div> </a
               ><a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="dropdown-list-image me-3">
@@ -110,12 +110,9 @@ import { RouterLink } from 'vue-router'
                 </div>
                 <div class="fw-bold">
                   <div class="text-truncate">
-                    <span
-                      >Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't
-                      good...</span
-                    >
+                    <span>Hi there! I am wondering if you can help me with a problem I've been having.</span>
                   </div>
-                  <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                  <p class="small text-gray-500 mb-0">Felipe Massa · 2w</p>
                 </div> </a
               ><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
             </div>
@@ -130,8 +127,7 @@ import { RouterLink } from 'vue-router'
               ><img class="border rounded-circle img-profile" src="@/assets/dog.png"
             /></a>
             <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
-              <a class="dropdown-item" href="#"><i class="fa-solid fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a
-              ><RouterLink class="dropdown-item" href="#" to="/settings"
+              <RouterLink class="dropdown-item" href="#" to="/settings"
                 ><i class="fa-solid fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</RouterLink
               ><a class="dropdown-item" href="#"><i class="fa-solid fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
               <div class="dropdown-divider"></div>

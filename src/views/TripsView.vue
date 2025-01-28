@@ -1,54 +1,23 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { ref, onMounted, computed } from 'vue'
-// import { fetchCategories, fetchFriends } from '@/api/user' // Assume you have API functions to fetch categories and friends
 import TripsTable from '@/components/TripsTable.vue'
+import { useCategory } from '@/composables/useCategory'
+import { useFriend } from '@/composables/useFriend'
+
+const { categories, fetchCategories } = useCategory()
+const { friends, fetchFriends } = useFriend()
 
 const searchQuery = ref('')
 const filterOption = ref('none')
 const sortOption = ref('date_desc')
-const categories = ref([])
-const friends = ref([])
 const filteredTrips = ref([])
-
-const generateDummyCategories = () => {
-  return {
-    data: [
-      { id: 1, name: 'Business', color: 'primary' },
-      { id: 2, name: 'Leisure', color: 'success' },
-      // Add more dummy categories as needed
-    ],
-  }
-}
-
-const generateDummyFriends = () => {
-  return {
-    data: [
-      { id: 1, name: 'Alice' },
-      { id: 2, name: 'Bob' },
-      { id: 3, name: 'Charlie' },
-      // Add more dummy friends as needed
-    ],
-  }
-}
-
-const fetchUserData = async () => {
-  try {
-    const categoriesResponse = generateDummyCategories() // await fetchCategories() // Fetch categories from the database
-    categories.value = categoriesResponse.data
-
-    const friendsResponse = generateDummyFriends() // await fetchFriends() // Fetch friends from the database
-    friends.value = friendsResponse.data
-  } catch (error) {
-    console.error('Error fetching user data:', error)
-  }
-}
 
 const totalTrips = computed(() => filteredTrips.value.length)
 
 const totalTimeTravelled = computed(() => {
   const totalMinutes = filteredTrips.value.reduce((total, trip) => {
-    const minutes = parseFloat(trip.duration)
+    const minutes = parseFloat(trip.duration ? trip.duration : 0)
     return total + minutes
   }, 0)
   const hours = Math.floor(totalMinutes / 60)
@@ -77,10 +46,20 @@ const friendWithMostTrips = computed(() => {
   const maxTrips = Math.max(...Object.values(friendCounts))
   const mostTripsFriends = Object.keys(friendCounts).filter((friend) => friendCounts[friend] === maxTrips)
 
-  return mostTripsFriends.length != 0 ? mostTripsFriends.join(', ') : '-'
+  // Convert usernames to first names
+  const mostTripsFriendsFirstNames = mostTripsFriends.map((username) => {
+    const friend = friends.value.find((f) => f.username === username)
+    return friend ? friend.firstname : username
+  })
+
+  return mostTripsFriendsFirstNames.length != 0 ? mostTripsFriendsFirstNames.join(', ') : '-'
 })
 
-onMounted(fetchUserData)
+/* onMounted(fetchUserData) */
+onMounted(async () => {
+  await fetchCategories()
+  await fetchFriends()
+})
 </script>
 
 <template>
@@ -93,8 +72,8 @@ onMounted(fetchUserData)
       <div class="col-6 col-md-3 mb-2 mb-md-0">
         <select id="filter" class="form-select form-select-sm" v-model="filterOption">
           <option selected value="none">Filters</option>
-          <option v-for="category in categories" :key="category.id" :value="category.name">(C) {{ category.name }}</option>
-          <option v-for="friend in friends" :key="friend.id" :value="friend.name">(F) {{ friend.name }}</option>
+          <option v-for="category in categories" :key="'cat_' + category.id" :value="category.label">(C) {{ category.label }}</option>
+          <option v-for="friend in friends" :key="'f_' + friend.id" :value="friend.username">(F) {{ friend.firstname }}</option>
         </select>
       </div>
       <div class="col-6 col-md-3 mb-2 mb-md-0">

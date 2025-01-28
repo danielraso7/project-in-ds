@@ -1,45 +1,26 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import { useFriend } from '@/composables/useFriend'
 
-// Simulate fetching data from a database
-const friends = ref([])
-const newFriendUsername = ref('')
-const loading = ref(false)
+const { friends, loading, fetchFriends, addFriendByUsername, deleteFriendById } = useFriend()
 
-const fetchFriends = async () => {
-  // Simulate an API call to fetch friends from the database
-  friends.value = [
-    { username: 'john_doe', firstName: 'John', lastName: 'Doe' },
-    { username: 'jane_smith', firstName: 'Jane', lastName: 'Smith' },
-    // Add more friends as needed
-  ]
+const formData = reactive({
+  username: '',
+})
+
+const handleAdd = async () => {
+  const newFriend = {
+    username: formData.username,
+  }
+
+  await addFriendByUsername(newFriend)
+
+  formData.username = ''
 }
 
-const addFriend = async () => {
-  loading.value = true
-  // Simulate an API call to add a friend by username
-  const success = true // Replace with actual API call result
-  if (success) {
-    await fetchFriends() // Reload the friends list
-    newFriendUsername.value = '' // Clear the input field
-  } else {
-    alert('Failed to add friend. Please try again.')
-  }
-  loading.value = false
-}
-
-const deleteFriend = async (username) => {
-  const confirmed = confirm('Are you sure you want to break up with this friend?')
-  if (confirmed) {
-    // Simulate an API call to delete a friend by username
-    const success = true // Replace with actual API call result
-    if (success) {
-      await fetchFriends() // Reload the friends list
-    } else {
-      alert('Failed to delete friend. Please try again.')
-    }
-  }
+const handleDelete = async (id) => {
+  await deleteFriendById(id)
 }
 
 onMounted(fetchFriends)
@@ -53,10 +34,10 @@ onMounted(fetchFriends)
           <h6 class="text-primary m-0 fw-bold">Add Friend</h6>
         </div>
         <div class="card-body">
-          <form @submit.prevent="addFriend">
+          <form @submit.prevent="handleAdd">
             <div class="mb-3">
               <label class="form-label" for="username"><strong>Username</strong></label>
-              <input id="username" class="form-control" type="text" v-model="newFriendUsername" placeholder="Enter username" required />
+              <input id="username" class="form-control" type="text" v-model="formData.username" placeholder="Enter username" required />
             </div>
             <SubmitButton button-text="Add Friend" :disabled="loading" />
           </form>
@@ -83,10 +64,10 @@ onMounted(fetchFriends)
               <tbody>
                 <tr v-for="friend in friends" :key="friend.username">
                   <td>{{ friend.username }}</td>
-                  <td>{{ friend.firstName }}</td>
-                  <td>{{ friend.lastName }}</td>
+                  <td>{{ friend.firstname }}</td>
+                  <td>{{ friend.lastname }}</td>
                   <td>
-                    <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.username)">
+                    <button class="btn btn-outline-danger btn-sm" @click="handleDelete(friend.id)">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </td>

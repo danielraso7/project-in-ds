@@ -1,9 +1,9 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import { useProfile } from '@/composables/useProfile'
 
-// TODO: DB
-const klimaticketType = ref(false) // false for classic, true for special
+const { klimaticketType, klimaticketCostClassic, klimaticketCostSpecial, fetchKlimaticketInfo, updateKlimaticketType } = useProfile()
 
 // TODO: DB???
 const formData = reactive({
@@ -14,11 +14,11 @@ const formData = reactive({
   last_name: 'Raso',
 })
 
-const handleSubmit = async () => {
-  // Handle form submission logic
-  console.log('Klimaticket Type updated:', klimaticketType.value)
-  // Update the Klimaticket type in the database
+const handleUpdate = async () => {
+  await updateKlimaticketType(klimaticketType.value)
 }
+
+onMounted(fetchKlimaticketInfo)
 </script>
 
 <template>
@@ -117,13 +117,17 @@ const handleSubmit = async () => {
               <h6 class="text-primary m-0 fw-bold">Klimaticket Type</h6>
             </div>
             <div class="card-body">
-              <form @submit.prevent="handleSubmit">
+              <form @submit.prevent="handleUpdate">
                 <div class="row mb-3">
                   <div class="col">
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" id="klimaticketSwitch" v-model="klimaticketType" />
                       <label class="form-check-label" for="klimaticketSwitch">
-                        {{ klimaticketType ? '&nbsp;Jugend/Senior/Spezial (€ 821,-)' : '&nbsp;Classic (€ 1.095,-)' }}
+                        {{
+                          klimaticketType
+                            ? `&nbsp;Jugend/Senior/Spezial (€ ${klimaticketCostSpecial},-)`
+                            : `&nbsp;Classic (€ ${klimaticketCostClassic},-)`
+                        }}
                       </label>
                     </div>
                   </div>

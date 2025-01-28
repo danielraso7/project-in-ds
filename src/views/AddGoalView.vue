@@ -1,12 +1,17 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { useToast } from 'vue-toastification'
-import axios from 'axios'
-import router from '@/router'
+import { ref, reactive, computed, onMounted } from 'vue'
 import FriendsCheckboxes from '@/components/FriendsCheckboxes.vue'
 import CategoriesRadio from '@/components/CategoriesRadio.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import { useGoals } from '@/composables/useGoals'
+import { useCategory } from '@/composables/useCategory'
+import { useFriend } from '@/composables/useFriend'
 
+const { createGoal } = useGoals()
+const { categories, fetchCategories } = useCategory()
+const { friends, fetchFriends } = useFriend()
+
+// TODO: retrieve from DB
 const goalTypes = ref([
   { id: 'cover', label: 'Coverage goal' },
   { id: 'quant', label: 'Quantitative goal' },
@@ -19,6 +24,7 @@ const isType2 = computed(() => formData.goalType === goalTypes.value[1].id)
 const isType3 = computed(() => formData.goalType === goalTypes.value[2].id)
 const isType4 = computed(() => formData.goalType === goalTypes.value[3].id)
 
+// TODO: retrieve from DB
 const coverCountObjects = ref([
   { id: 's', label: 'Stations', cover: true, count: true },
   { id: 'trk', label: 'Train Route Kilometres', cover: true, count: true },
@@ -33,6 +39,7 @@ const countObjects = computed(() => {
   return coverCountObjects.value.filter((obj) => obj.count)
 })
 
+// TODO: retrieve from DB
 const states = ref([
   { id: 'V', label: 'Vienna' },
   { id: 'UA', label: 'Upper Austria' },
@@ -47,34 +54,19 @@ const states = ref([
 
 // TODO: retrieve from DB
 const predefinedGoals = ref([
-  { id: '1', label: 'visit all federal states' },
-  { id: '2', label: 'visit all state capitals' },
-  { id: '3', label: 'visit capital city Vienna' },
-  { id: '4', label: 'visit the north-/east-/south-/west-most station in Austria' },
-  { id: '5', label: 'visit routes along rivers, lakes and mountains' },
-])
-
-// TODO: retrieve from DB
-const friends = ref([
-  { id: 'formCheck-1', label: 'Friend 1', value: 'friend1' },
-  { id: 'formCheck-2', label: 'Friend 2', value: 'friend2' },
-  { id: 'formCheck-3', label: 'Friend 3', value: 'friend3' },
-  { id: 'formCheck-4', label: 'Friend 4', value: 'friend4' },
-])
-
-// TODO: retrieve from DB
-const categories = ref([
-  { id: 'defaultCat', label: 'Default', value: 'default', color: 'success' },
-  { id: 'defaultCat-2', label: 'cat2', value: 'cat2', color: 'danger' },
-  { id: 'defaultCat-1', label: 'cat4', value: 'cat4', color: 'warning' },
+  { id: 1, label: 'visit all federal states' },
+  { id: 2, label: 'visit all state capitals' },
+  { id: 3, label: 'visit capital city Vienna' },
+  { id: 4, label: 'visit the north-/east-/south-/west-most station in Austria' },
+  { id: 5, label: 'visit routes along rivers, lakes and mountains' },
 ])
 
 const formData = reactive({
   goalType: '',
-  startDate: '',
-  endDate: '',
+  startDate: null,
+  endDate: null,
   selectedFriends: [],
-  selectedCategory: '',
+  selectedCategory: null,
   isPercentage: true,
   coverNumber: 0,
   coverObject: '',
@@ -82,12 +74,15 @@ const formData = reactive({
   countObject: '',
   federalState: 'AT',
   price: 0.0,
-  predefinedGoal: '',
+  predefinedGoal: 1,
 })
 
-const toast = useToast()
+const handleCreate = async () => {
+  if (formData.startDate && formData.endDate && formData.startDate > formData.endDate) {
+    alert('Start date must be before end date!')
+    return
+  }
 
-const handleSubmit = async () => {
   const newGoal = {
     goalType: formData.goalType,
     startDate: formData.startDate,
@@ -104,20 +99,18 @@ const handleSubmit = async () => {
     predefinedGoal: formData.predefinedGoal,
   }
 
-  try {
-    const response = await axios.post('/api/goal', newGoal)
-    toast.success('Goal created successfully.')
-    router.push('/goals')
-  } catch (error) {
-    console.error('Error creating goal: ', error)
-    toast.error('Could not create goal. Please try again.')
-  }
+  await createGoal(newGoal)
 }
+
+onMounted(async () => {
+  await fetchCategories()
+  await fetchFriends()
+})
 </script>
 
 <template>
   <h3 class="text-dark mb-4">Add Goal</h3>
-  <form @submit.prevent="handleSubmit">
+  <form @submit.prevent="handleCreate">
     <div class="row mb-5 justify-content-center">
       <label class="col-md-2 col-sm-3 col-form-label text-md-end" for="goalTypeSelect"><strong>Goal Type:</strong></label>
       <div class="col-md-3">
@@ -139,9 +132,17 @@ const handleSubmit = async () => {
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>How much (value mustn't exceed the total amount)?</strong></label>
                 <div class="input-group">
-                  <input v-model="formData.coverNumber" class="form-control" type="number" step="1" required />
+                  <input
+                    v-model="formData.coverNumber"
+                    class="form-control"
+                    type="number"
+                    step="1"
+                    min="1"
+                    :max="formData.isPercentage ? 100 : 9999"
+                    required
+                  />
                   <div class="input-group-text">
-                    <input type="checkbox" v-model="formData.isPercentage" class="d-none" id="togglePercentage" required />
+                    <input type="checkbox" v-model="formData.isPercentage" class="d-none" id="togglePercentage" name="togglePercentage" />
                     <label for="togglePercentage" class="m-0">
                       <i :class="formData.isPercentage ? 'fa-solid fa-percent' : 'fa-solid fa-hashtag'"></i>
                     </label>
@@ -161,7 +162,7 @@ const handleSubmit = async () => {
             <div class="row justify-content-center">
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>How many?</strong></label>
-                <input v-model="formData.countNumber" class="form-control" type="number" step="1" required />
+                <input v-model="formData.countNumber" class="form-control" type="number" step="1" min="1" required />
               </div>
               <div class="col-md-4 mb-3">
                 <label class="form-label"><strong>What?</strong></label
@@ -184,7 +185,7 @@ const handleSubmit = async () => {
             <div v-if="isType3" class="col-md-4 mb-3">
               <label class="form-label"><strong>Price</strong></label>
               <div class="input-group">
-                <input v-model="formData.price" class="form-control" type="number" step="0.01" placeholder="Enter price" required /><span
+                <input v-model="formData.price" class="form-control" type="number" step="0.01" min="1" placeholder="Enter price" required /><span
                   class="input-group-text"
                   ><i class="fa-solid fa-euro-sign"></i
                 ></span>
@@ -193,7 +194,7 @@ const handleSubmit = async () => {
             <div v-if="isType4" class="col-md-4 mb-3">
               <label class="form-label"><strong>Goal</strong></label
               ><select class="form-select" v-model="formData.predefinedGoal" required>
-                <option value="" selected disabled>pls select a predefined goal</option>
+                <option :value="null" selected disabled>pls select a predefined goal</option>
                 <option v-for="g in predefinedGoals" :key="g.id" :value="g.id">{{ g.label }}</option>
               </select>
             </div>
