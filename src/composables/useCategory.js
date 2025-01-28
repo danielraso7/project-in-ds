@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+const backendUrl = import.meta.env.VITE_API_BASE_URL
 
 export function useCategory() {
   const loading = ref(false)
@@ -15,7 +16,9 @@ export function useCategory() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/categories')
+      const response = await axios.get(`${backendUrl}/categories`)
+      console.log('hiiiii')
+      console.log(response)
       categories.value = response.data
     } catch (ex) {
       error.value = ex
@@ -30,7 +33,7 @@ export function useCategory() {
     error.value = null
 
     try {
-      await axios.post('/api/categories', newCategory)
+      await axios.post(`${backendUrl}/categories`, newCategory)
       await fetchCategories()
       toast.success('Category created successfully.')
     } catch (ex) {

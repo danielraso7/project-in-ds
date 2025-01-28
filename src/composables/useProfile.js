@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+const backendUrl = import.meta.env.VITE_API_BASE_URL
 
 export function useProfile() {
   const loading = ref(false)
@@ -22,7 +23,7 @@ export function useProfile() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/profile/klimaticket')
+      const response = await axios.get(`${backendUrl}/profile/klimaticket`)
       klimaticketType.value = response.data.klimaticketType == 1 ? true : false
       klimaticketCostClassic.value = response.data.klimaticketCostClassic
       klimaticketCostSpecial.value = response.data.klimaticketCostSpecial
@@ -40,7 +41,7 @@ export function useProfile() {
     error.value = null
 
     try {
-      await axios.put(`/api/profile/klimaticket/${typeBoolean}`)
+      await axios.put(`${backendUrl}/profile/klimaticket/${typeBoolean}`)
       await fetchKlimaticketInfo()
       toast.success('Type updated successfully.')
     } catch (ex) {
@@ -56,7 +57,7 @@ export function useProfile() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/profile/dashboard')
+      const response = await axios.get(`${backendUrl}/profile/dashboard`)
       totalTravelCost.value = response.data.totalTravelCost
       await fetchKlimaticketInfo()
     } catch (ex) {

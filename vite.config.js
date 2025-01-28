@@ -7,7 +7,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), vueDevTools()],
+  base: './', // Ensures correct paths for assets in production
   server: {
+    // DEV ONLY
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

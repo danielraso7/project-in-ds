@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+const backendUrl = import.meta.env.VITE_API_BASE_URL
 
 export function useFriend() {
   const loading = ref(false)
@@ -15,7 +16,7 @@ export function useFriend() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/friends')
+      const response = await axios.get(`${backendUrl}/friends`)
       friends.value = response.data
     } catch (ex) {
       error.value = ex
@@ -33,7 +34,7 @@ export function useFriend() {
     error.value = null
 
     try {
-      await axios.delete(`/api/friends/${id}`)
+      await axios.delete(`${backendUrl}/friends/${id}`)
       await fetchFriends() // refresh friends after deletion
       toast.success('Friend deleted successfully.')
     } catch (ex) {
@@ -49,7 +50,7 @@ export function useFriend() {
     error.value = null
 
     try {
-      await axios.post('/api/friends', newFriend)
+      await axios.post(`${backendUrl}/friends`, newFriend)
       await fetchFriends()
       toast.success('Friend added successfully.')
     } catch (ex) {

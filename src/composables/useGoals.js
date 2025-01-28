@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import router from '@/router'
+const backendUrl = import.meta.env.VITE_API_BASE_URL
 
 export function useGoals() {
   const loading = ref(false)
@@ -16,7 +17,7 @@ export function useGoals() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/goals')
+      const response = await axios.get(`${backendUrl}/goals`)
       goals.value = response.data
     } catch (ex) {
       error.value = ex
@@ -31,7 +32,7 @@ export function useGoals() {
     error.value = null
 
     try {
-      await axios.post('/api/goals', newGoal)
+      await axios.post(`${backendUrl}/goals`, newGoal)
       await fetchGoals()
       toast.success('Goal created successfully.')
       router.push('/goals')

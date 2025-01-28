@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import router from '@/router'
+const backendUrl = import.meta.env.VITE_API_BASE_URL
 
 export function useTrips() {
   const loading = ref(false)
@@ -16,7 +17,7 @@ export function useTrips() {
     error.value = null
 
     try {
-      const response = await axios.get('/api/trips')
+      const response = await axios.get(`${backendUrl}/trips`)
       trips.value = response.data
     } catch (ex) {
       error.value = ex
@@ -34,7 +35,7 @@ export function useTrips() {
     error.value = null
 
     try {
-      await axios.delete(`/api/trips/${id}`)
+      await axios.delete(`${backendUrl}/trips/${id}`)
       await fetchTrips() // refresh trips after deletion
       toast.success('Trip deleted successfully.')
     } catch (ex) {
@@ -50,7 +51,7 @@ export function useTrips() {
     error.value = null
 
     try {
-      await axios.post('/api/trips', newTrip)
+      await axios.post(`${backendUrl}/trips`, newTrip)
       await fetchTrips()
       toast.success('Trip created successfully.')
       router.push('/trips')
